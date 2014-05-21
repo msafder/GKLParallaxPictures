@@ -22,7 +22,7 @@
 @property (nonatomic, strong) UIScrollView *transparentScroller;
 @property (nonatomic, strong) UIScrollView *contentScrollView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIPageControl *pageControl;
+//@property (nonatomic, strong) UIPageControl *pageControl;
 
 @property (nonatomic, strong) UIWebView *webView;
 
@@ -30,9 +30,9 @@
 
 @implementation GKLParallaxPicturesViewController
 
-static CGFloat WindowHeight = 200.0;
-static CGFloat ImageHeight  = 200;
-static CGFloat PageControlHeight = 20.0f;
+static CGFloat WindowHeight = 320.0;
+static CGFloat ImageHeight  = 320;
+static CGFloat PageControlHeight = -30.0f;
 
 - (id)initWithImages:(NSArray *)images andcontentObject:(id)content {
     self = [super initWithNibName:nil bundle:nil];
@@ -41,6 +41,8 @@ static CGFloat PageControlHeight = 20.0f;
         
         BOOL contentIsWebView = [content isKindOfClass:[UIWebView class]];
         BOOL contentIsScrollView = [content isKindOfClass:[UIScrollView class]];
+        
+        contentIsScrollView = NO;
         
         if (contentIsWebView) {
             _webView = content;
@@ -248,6 +250,20 @@ static CGFloat PageControlHeight = 20.0f;
 }
 
 #pragma mark - View lifecycle
+
+//- (void)loadView
+//{
+//    
+//}
+
+//- (void)viewDidLoad
+//{
+//    [super viewDidLoad];
+//    // Do any additional setup after loading the view.
+//    
+//    
+//    
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
