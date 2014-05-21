@@ -26,4 +26,6 @@
 
 @property (weak, nonatomic) id<GKLPPViewControllerDelegate> delegate;
 
+@property (nonatomic, strong) UIPageControl *pageControl;
+
 @end
