@@ -26,6 +26,7 @@
 
 @property (weak, nonatomic) id<GKLPPViewControllerDelegate> delegate;
 
+@property (nonatomic, strong) UIScrollView *contentScrollView;
 @property (nonatomic, strong) UIPageControl *pageControl;
 
 @end
