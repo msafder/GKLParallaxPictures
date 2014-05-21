@@ -20,7 +20,7 @@
 @property (nonatomic, strong) NSMutableArray *imageViews;
 @property (nonatomic, strong) UIScrollView *imageScroller;
 @property (nonatomic, strong) UIScrollView *transparentScroller;
-@property (nonatomic, strong) UIScrollView *contentScrollView;
+//@property (nonatomic, strong) UIScrollView *contentScrollView;
 @property (nonatomic, strong) UIView *contentView;
 //@property (nonatomic, strong) UIPageControl *pageControl;
 
