@@ -8,6 +8,8 @@
 
 #import "GKLParallaxPicturesViewController.h"
 
+#import <UIActivityIndicator-for-SDWebImage/UIImageView+UIActivityIndicatorForSDWebImage.h>
+
 @interface GKLParallaxPicturesViewController () <UIScrollViewDelegate>
 
 //NSMutableArray  *_imageViews;
@@ -98,7 +100,7 @@ static CGFloat PageControlHeight = -30.0f;
         
         // load up our delegate to see when images are tapped on
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-        tapGesture.numberOfTapsRequired = 2;
+        tapGesture.numberOfTapsRequired = 1;
         [_transparentScroller addGestureRecognizer:tapGesture];
     }
     return self;
@@ -123,14 +125,32 @@ static CGFloat PageControlHeight = -30.0f;
 }
 
 -(void)loadImageFromURLString:(NSString*)urlString forImageView:(UIImageView*)imageView{
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
-    dispatch_async(queue, ^{
-        NSData *imageData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:urlString]];
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            UIImage *downloadedImage = [[UIImage alloc] initWithData:imageData];
-            [imageView setImage:downloadedImage];
-        });
-    });
+    
+    [imageView setImageWithURL:[NSURL URLWithString:urlString]
+                   placeholderImage:nil
+                            options:SDWebImageRetryFailed
+                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+
+                          }];
+    
+    
+//    [page.imageView setImageWithURL:[NSURL URLWithString:self.currentListing.imageUrls[pageIndex]]
+//                   placeholderImage:nil
+//                            options:SDWebImageRetryFailed
+//                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+//                              
+//                          }];
+    
+//    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+//    dispatch_async(queue, ^{
+//        NSData *imageData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:urlString]];
+//        dispatch_sync(dispatch_get_main_queue(), ^{
+//            UIImage *downloadedImage = [[UIImage alloc] initWithData:imageData];
+//            [imageView setImage:downloadedImage];
+//        });
+//    });
+    
+    
 }
 
 - (void)addImage:(id)image atIndex:(int)index{
