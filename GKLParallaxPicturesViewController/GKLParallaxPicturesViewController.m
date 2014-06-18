@@ -33,7 +33,7 @@
 @implementation GKLParallaxPicturesViewController
 
 static CGFloat WindowHeight = 320.0;
-static CGFloat ImageHeight  = 320;
+static CGFloat ImageHeight  = 320.0;
 static CGFloat PageControlHeight = -30.0f;
 
 - (id)initWithImages:(NSArray *)images andcontentObject:(id)content {
@@ -59,13 +59,26 @@ static CGFloat PageControlHeight = -30.0f;
         _imageViews = [NSMutableArray arrayWithCapacity:[images count]];
         [self addImages:images];
         
+        
+        //verticle scroll
         _transparentScroller = [[UIScrollView alloc] initWithFrame:CGRectZero];
-        _transparentScroller.backgroundColor                = [UIColor clearColor];
+        _transparentScroller.backgroundColor                = [UIColor redColor];
+        _transparentScroller.alpha = 0.4;
         _transparentScroller.delegate                       = self;
         _transparentScroller.bounces                        = NO;
         _transparentScroller.pagingEnabled                  = YES;
         _transparentScroller.showsVerticalScrollIndicator   = NO;
         _transparentScroller.showsHorizontalScrollIndicator = NO;
+        
+//        [_transparentScroller setUserInteractionEnabled:NO];
+        
+        
+        
+        [_transparentScroller.panGestureRecognizer addTarget:self action:@selector(handleGesture:)];
+        
+//        swipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp
+//        | UISwipeGestureRecognizerDirectionDown;
+
         
         if (contentIsWebView) {
             _contentScrollView = _webView.scrollView;
@@ -132,15 +145,7 @@ static CGFloat PageControlHeight = -30.0f;
                           completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
 
                           }];
-    
-    
-//    [page.imageView setImageWithURL:[NSURL URLWithString:self.currentListing.imageUrls[pageIndex]]
-//                   placeholderImage:nil
-//                            options:SDWebImageRetryFailed
-//                          completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-//                              
-//                          }];
-    
+        
 //    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
 //    dispatch_async(queue, ^{
 //        NSData *imageData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:urlString]];
@@ -210,19 +215,52 @@ static CGFloat PageControlHeight = -30.0f;
         yscroll = floorf(yOffset / 2.0);
         _imageScroller.contentOffset = CGPointMake(xOffset, yscroll);
     }
+
+    CGFloat transpScrHeight = (WindowHeight - 44)  - abs(yOffset);
     
-    CGFloat transpScrHeigth;
-    transpScrHeigth = WindowHeight - abs(yOffset);
+    NSLog(@"transpScrHeigth:%f", transpScrHeight);
     
-    CGRect transpScrFrame = self.transparentScroller.frame;
-    
-    if (transpScrHeigth > 0) {
-        transpScrFrame.size.height = transpScrHeigth;
-    } else {
-        transpScrFrame.size.height = 0;
+    if (transpScrHeight > 0)
+    {
+        transpScrHeight += 88;
     }
-    
+    else
+    {
+        transpScrHeight = 0;
+    }
+
+    CGRect transpScrFrame = self.transparentScroller.frame;
+    transpScrFrame.size.height = transpScrHeight;
     self.transparentScroller.frame = transpScrFrame;
+    
+    
+    
+//    CGFloat transpScrHeigth;
+//    transpScrHeigth = WindowHeight - abs(yOffset);
+//    
+//    CGRect transpScrFrame = self.transparentScroller.frame;
+//    
+//    
+//    NSLog(@"transpScrHeigth:%f", transpScrHeigth);
+//    
+//    if (transpScrHeigth > 0) {
+//    
+////        if (transpScrHeigth <= 276)
+////        {
+////            transpScrFrame.size.height = transpScrHeigth + 44;
+////        }
+////        else
+////        {
+//            transpScrFrame.size.height = transpScrHeigth;
+////        }
+//    
+//    } else {
+//        transpScrFrame.size.height = 0;
+//    }
+//    
+//    self.transparentScroller.frame = transpScrFrame;
+//    
+//    NSLog(@"transpScrFrame:%f", self.transparentScroller.frame.size.height);
 }
 - (void)layoutContent
 {
@@ -266,7 +304,12 @@ static CGFloat PageControlHeight = -30.0f;
     _imageScroller.contentOffset = CGPointMake(0.0, 0.0);
     
     _transparentScroller.contentSize = CGSizeMake([_imageViews count]*imageWidth, WindowHeight);
-//    _transparentScroller.contentOffset = CGPointMake(0.0, 0.0);
+    
+    CGRect frame = CGRectMake(_transparentScroller.frame.origin.x, _transparentScroller.frame.origin.y + 44, _transparentScroller.frame.size.width, _transparentScroller.frame.size.height);
+    _transparentScroller.frame = frame;
+    
+//    _transparentScroller.contentInset = UIEdgeInsetsMake(200, 0, 0, 0);
+//    _transparentScroller.contentOffset = CGPointMake(0.0, 100.0);
 }
 
 #pragma mark - View lifecycle
@@ -317,10 +360,95 @@ static CGFloat PageControlHeight = -30.0f;
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     //    update our page marker
     [_pageControl setCurrentPage:floor(_transparentScroller.contentOffset.x/_imageScroller.frame.size.width)];
+    
+    
+    if(scrollView == _contentScrollView)
+    {
+        if (_contentScrollView.contentOffset.y <= 0) {
+            
+            NSLog(@"contentOffset.y:%f", _contentScrollView.contentOffset.y);
+        }
+    }
+    else if(scrollView == _transparentScroller)
+    {
+//        if (_transparentScroller.contentOffset.y <= 0) {
+        
+            NSLog(@"transparentOffset:%f", _transparentScroller.contentOffset.y);
+//        }
+    }
+    
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     [self updateOffsets];
 }
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    
+    
+    
+
+}
+
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//    
+//    
+//    return YES;
+//}
+
+- (void)handleGesture:(UIPanGestureRecognizer *)gesture
+{
+    CGPoint translation = [gesture translationInView:_transparentScroller];
+ 
+    return;
+    
+    if (fabsf(translation.x) > fabsf(translation.y))
+    {
+        NSLog(@"horizontal");
+        
+    }
+    else
+    {
+//        float currentY = _contentScrollView.contentOffset.y;
+        
+//        if (_contentScrollView.contentOffset.y >= -(320 - 44))
+        if (_contentScrollView.contentOffset.y >= -44)
+        {
+            float currentY = 0;
+//            if(_contentScrollView.contentOffset.y == 0)
+//            if(_contentScrollView.contentOffset.y >= 0 && _contentScrollView.contentOffset.y < 2)
+//            {
+//                currentY = -44;
+//            }
+            
+            _contentScrollView.contentOffset = CGPointMake(0, currentY +  -translation.y);
+            
+//            [_contentScrollView setContentOffset:CGPointMake(0, currentY +  -translation.y) animated:YES];
+            
+//            _contentScrollView.
+        }
+        else
+        {
+//             _contentScrollView.contentOffset = CGPointMake(0, 44);
+            return;
+        }
+
+        
+        
+//        NSLog(@"vertical.y:%f", translation.y);
+//        NSLog(@"contentOffset.y:%f", _contentScrollView.contentOffset.y);
+        
+//        _contentScrollView.panGestureRecognizer.view.center = CGPointMake(gesture.view.center.x + translation.x, gesture.view.center.y + translation.y);
+        
+//        [_contentScrollView.panGestureRecognizer setTranslation:currentTouchPoint inView:_contentScrollView];
+    }
+}
+
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//    return TRUE;
+//}
 
 @end
